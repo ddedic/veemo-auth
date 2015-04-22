@@ -1,4 +1,4 @@
-<?php namespace Veemo\Core\Traits;
+<?php namespace Veemo\Auth\Traits;
 
 use Illuminate\Database\Eloquent\Collection;
 
@@ -24,7 +24,7 @@ trait PermissionsTrait
      */
     public function roles()
     {
-        return $this->belongsToMany('\App\Modules\Auth\Models\Role')->withTimestamps();
+        return $this->belongsToMany('\App\Modules\Users\Models\Role')->withTimestamps();
     }
 
     /**

@@ -1,7 +1,7 @@
-<?php namespace Veemo\Core\Traits;
+<?php namespace Veemo\Auth\Traits;
 
-use App\Modules\Auth\Models\Role;
-use App\Modules\Auth\Services\Registrar;
+use App\Modules\Users\Models\Role;
+use App\Modules\Users\Services\Registrar;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Session;
@@ -31,7 +31,7 @@ trait AuthenticatesAndRegistersUsersTrait
      */
     public function getRegister()
     {
-        return $this->theme->view('modules.auth.register')->render();
+        return $this->theme->view('modules.users.auth.register')->render();
     }
 
     /**
@@ -86,7 +86,7 @@ trait AuthenticatesAndRegistersUsersTrait
      */
     public function getLogin()
     {
-        return $this->theme->view('modules.auth.login')->render();
+        return $this->theme->view('modules.users.auth.login')->render();
     }
 
     /**

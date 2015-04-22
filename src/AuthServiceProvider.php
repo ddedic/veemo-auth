@@ -1,13 +1,12 @@
-<?php namespace Veemo\Core;
+<?php namespace Veemo\Auth;
 
 use App, Config, Lang, View;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Foundation\AliasLoader;
 use Illuminate\Routing\Router;
 
 
 
-class CoreServiceProvider extends ServiceProvider
+class AuthServiceProvider extends ServiceProvider
 {
 
     /**
@@ -22,8 +21,11 @@ class CoreServiceProvider extends ServiceProvider
      * @var array
      */
     protected $middlewares = [
-        'backend.force.ssl'       => 'BackendForceSslMiddleware',
-        'frontend.force.ssl'      => 'FrontendForceSslMiddleware'
+        'allow.backend.access'      => 'AllowBackendAccessMiddleware',
+        'auth.frontend'             => 'AuthFrontendMiddleware',
+        'guest.frontend'            => 'GuestFrontendMiddleware',
+        'auth.backend'              => 'AuthBackendMiddleware',
+        'guest.backend'             => 'GuestBackendMiddleware'
     ];
 
 
@@ -33,7 +35,7 @@ class CoreServiceProvider extends ServiceProvider
 
         // Publish config.
         $this->publishes([
-            __DIR__ . '/Publish/Config/core.php' => config_path('veemo/core.php'),
+            __DIR__ . '/Config/auth.php' => config_path('veemo/auth.php'),
         ]);
 
 
@@ -49,68 +51,17 @@ class CoreServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/Publish/Config/core.php', 'veemo.core'
+            __DIR__ . '/Config/auth.php', 'veemo.auth'
         );
 
-        $this->registerServices();
-        
-        $this->registerAliases();
-
-        $this->registerNamespaces();
-
-        $this->registerModules();
-
-        $this->registerThemes();
-
-        $this->registerConsoleCommands();
 
         $this->registerHelpers();
-
-        $this->registerDefaultRoutes();
 
         $this->registerMiddlewares($this->app->router);
     }
 
 
-    protected function registerServices()
-    {
-        // HTML + FORM
-        $this->app->register('Illuminate\Html\HtmlServiceProvider');
-      
-        
-    }
 
-
-    protected function registerAliases()
-    {
-		$aliases = AliasLoader::getInstance();
-		
-		// FORM
-		$aliases->alias(
-            'Form',
-            'Illuminate\Html\FormFacade'
-        );
-        
-        // HTML
-        $aliases->alias(
-            'Html',
-            'Illuminate\Html\HtmlFacade'
-        );        
-    }
-
-
-    protected function registerModules()
-    {
-        $this->app->register('Veemo\Modules\ModulesServiceProvider');
-        AliasLoader::getInstance()->alias('Module', 'Veemo\Modules\Facades\Module');
-    }
-
-
-    protected function registerThemes()
-    {
-        $this->app->register('Veemo\Themes\ThemeServiceProvider');
-        AliasLoader::getInstance()->alias('Theme', 'Veemo\Themes\Facades\Theme');
-    }
 
 
 
@@ -122,62 +73,16 @@ class CoreServiceProvider extends ServiceProvider
     }
 
 
-    public function registerDefaultRoutes()
-    {
-        require (__DIR__ . '/Http/routes.php');
-    }
-
-
 
     public function registerMiddlewares(Router $router)
     {
         foreach ($this->middlewares as $name => $middleware) {
-            $class = "Veemo\\Core\\Http\\Middleware\\{$middleware}";
+            $class = "Veemo\\Auth\\Http\\Middleware\\{$middleware}";
             $router->middleware($name, $class);
         }
     }
 
 
-    /**
-     * Register the Core module resource namespaces.
-     *
-     * @return void
-     */
-    protected function registerNamespaces()
-    {
-
-        //
-
-    }
-
-
-    /**
-     * Register the package console commands.
-     *
-     * @return void
-     */
-    protected function registerConsoleCommands()
-    {
-        $this->registerInstallCommand();
-
-        $this->commands([
-            'veemo.install'
-        ]);
-    }
-
-
-    /**
-     * Register the "veemo:install" console command.
-     *
-     * @return Console\InstallCommand
-     */
-    protected function registerInstallCommand()
-    {
-        $this->app->bindShared('veemo.install', function ($app) {
-            $handler = new Handlers\InstallHandler();
-            return new Console\InstallCommand($handler);
-        });
-    }
 
 
 }

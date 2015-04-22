@@ -1,4 +1,4 @@
-<?php namespace App\Modules\Users\Http\Middleware;
+<?php namespace Veemo\Auth\Http\Middleware;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;

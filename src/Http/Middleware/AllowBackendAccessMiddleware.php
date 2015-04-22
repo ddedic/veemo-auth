@@ -1,4 +1,4 @@
-<?php namespace App\Modules\Users\Http\Middleware;
+<?php namespace Veemo\Auth\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
