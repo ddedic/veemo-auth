@@ -6,6 +6,10 @@ use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Session;
 
+use Veemo\Auth\Exceptions\UserNotActivatedException;
+use Veemo\Auth\Exceptions\UserBannedException;
+
+
 
 trait AuthenticatesAndRegistersUsersTrait
 {
@@ -55,7 +59,7 @@ trait AuthenticatesAndRegistersUsersTrait
         $user->syncRoles([$role->id]);
         $this->auth->login($user);
 
-        return redirect($this->redirectRoute());
+        return redirect()->route($this->redirectRoute());
     }
 
     /**
@@ -103,23 +107,40 @@ trait AuthenticatesAndRegistersUsersTrait
 
         $credentials = $request->only('email', 'password');
 
-        if ($this->auth->attempt($credentials, $request->has('remember'))) {
 
-            $intended = Session::pull('url.intended');
+        try {
 
-            if (is_null($intended))
-            {
-                return redirect()->route($this->redirectRoute());
+            if ($this->auth->attempt($credentials, $request->has('remember'))) {
+
+                $intended = Session::pull('url.intended');
+
+                if (is_null($intended))
+                {
+                    return redirect()->route($this->redirectRoute());
+                }
+
+                return redirect()->intended($intended);
+
+            } else {
+                $errors = ['email' => 'These credentials do not match our records.'];
             }
 
-            return redirect()->intended($intended);
-        }
+        } catch (UserNotActivatedException $e) {
+            $errors = ['error' => 'You account is not activated.'];
+
+        }  catch (UserBannedException $e) {
+            $errors = ['error' => 'You account is banned.'];
+
+        } //catch (\Exception $e) {
+            //\Log::error('Internal error. postLogin method. Error message: ' . $e->getMessage());
+           // $errors = ['error' => 'Runtime error.'];
+        // }
+
+
 
         return redirect()->route($this->loginRoute())
             ->withInput($request->only('email', 'remember'))
-            ->withErrors([
-                'email' => 'These credentials do not match our records.',
-            ]);
+            ->withErrors($errors);
     }
 
     /**

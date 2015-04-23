@@ -60,7 +60,7 @@ trait PermissionsTrait
     public function isDisabled()
     {
 
-        return $this->is_disabled;
+        return $this->status == 'active' ? false : true;
     }
 
     /**
@@ -68,7 +68,7 @@ trait PermissionsTrait
      *
      **/
     public function disable() {
-        $this->is_disabled = true;
+        $this->status = 'inactive';
         $this->save();
     }
 
@@ -77,7 +77,17 @@ trait PermissionsTrait
      *
      **/
     public function enable() {
-        $this->is_disabled = false;
+        $this->status = 'active';
+        $this->save();
+    }
+
+
+    /**
+     * Ban user
+     *
+     **/
+    public function ban() {
+        $this->status = 'banned';
         $this->save();
     }
 
@@ -227,21 +237,30 @@ trait PermissionsTrait
     }
 
     /**
-     * Get disabled users
+     * Get inactive users
      *
      * @param \Illuminate\Database\Eloquent $query
      **/
-    public function scopeDisabled($query) {
-        $query->where('is_disabled' ,'=', true);
+    public function scopeInactive($query) {
+        $query->where('status' ,'=', 'inactive');
     }
 
     /**
-     * Get enabled users
+     * Get active users
      *
      * @param \Illuminate\Database\Eloquent $query
      **/
-    public function scopeEnabled($query) {
-        $query->where('is_disabled' ,'=', false);
+    public function scopeActive($query) {
+        $query->where('status' ,'=', 'active');
+    }
+
+    /**
+     * Get banned users
+     *
+     * @param \Illuminate\Database\Eloquent $query
+     **/
+    public function scopeBanned($query) {
+        $query->where('status' ,'=', 'banned');
     }
 
     /**

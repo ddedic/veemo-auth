@@ -39,6 +39,17 @@ class AuthServiceProvider extends ServiceProvider
         ]);
 
 
+
+        \Auth::extend('eloquent', function($app)
+        {
+            $model = $app['config']['auth.model'];
+
+            $provider = new VeemoUserProvider($app['hash'], $model);
+
+            return new VeemoGuard($provider, $app['session.store']);
+
+        });
+
     }
 
 

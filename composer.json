@@ -23,6 +23,9 @@
         "scrutinizer/ocular": "~1.1"
     },
     "autoload": {
+        "classmap": [
+            "src/Exceptions/Exceptions.php"
+        ],
         "psr-4": {
             "Veemo\\Auth\\": "src"
         }
