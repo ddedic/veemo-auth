@@ -84,10 +84,8 @@ class AuthBackendMiddleware
     		        return $this->application->abort(403);
     		        
     		    } else {
-    		        
-    		        //flash()->error(config('appkit.access_denied_message'));
-    		        dd('access denied / no permissions: ' . print_r($permissions, true));
-    		        //return redirect()->route('admin');
+                    flash()->error('Access denied. Insufficient permissions.');
+    		        return redirect()->route('backend.dashboard');
     		    }
     		   
     		}

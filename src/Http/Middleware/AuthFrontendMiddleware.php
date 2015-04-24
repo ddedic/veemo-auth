@@ -62,8 +62,7 @@ class AuthFrontendMiddleware
 		if (!is_null($permissions)) {
     		if ($this->auth->check() && !$request->user()->can($permissions))
     		{
-		        //flash()->error(config('appkit.access_denied_message'));
-		        dd('Frontend: access denied / no permissions');
+		        flash()->error('Access denied. Insufficient permissions.');
 		        return redirect()->route('frontend.homepage');
     		}
 		}
