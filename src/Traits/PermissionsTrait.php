@@ -53,21 +53,43 @@ trait PermissionsTrait
     }
 
     /**
-     * Checks if the user is disabled.
+     * Checks if the user is activated.
      *
      * @return bool
      */
-    public function isDisabled()
+    public function isActive()
     {
 
-        return $this->status == 'active' ? false : true;
+        return $this->status == 'active' ? true : false;
+    }
+
+    /**
+     * Checks if the user is inactive.
+     *
+     * @return bool
+     */
+    public function isInactive()
+    {
+
+        return $this->status == 'inactive' ? true : false;
+    }
+
+    /**
+     * Checks if the user is banned.
+     *
+     * @return bool
+     */
+    public function isBanned()
+    {
+
+        return $this->status == 'banned' ? true : false;
     }
 
     /**
      * Disable user
      *
      **/
-    public function disable() {
+    public function deactivate() {
         $this->status = 'inactive';
         $this->save();
     }
@@ -76,7 +98,7 @@ trait PermissionsTrait
      * Enable user
      *
      **/
-    public function enable() {
+    public function activate() {
         $this->status = 'active';
         $this->save();
     }

@@ -65,14 +65,10 @@ class AuthServiceProvider extends ServiceProvider
             __DIR__ . '/Config/auth.php', 'veemo.auth'
         );
 
-
         $this->registerHelpers();
 
         $this->registerMiddlewares($this->app->router);
     }
-
-
-
 
 
 

@@ -34,4 +34,33 @@ class VeemoUserProvider extends  EloquentUserProvider {
     }
 
 
+    /**
+     * Retrieve a user by their activation token.
+     *
+     * @param  string  $token
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
+    public function retrieveByActivationToken($token)
+    {
+        $model = $this->createModel();
+
+        return $model->newQuery()
+            ->where($model->getActivationTokenName(), $token)
+            ->first();
+    }
+
+
+    /**
+     * Retrieve a user by their activation token.
+     *
+     * @param  string  $token
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
+    public function generateActivationToken()
+    {
+        $model = $this->createModel();
+
+        return $model->setActivationToken();
+    }
+
 }

@@ -2,13 +2,15 @@
 
 use App\Modules\Users\Models\Role;
 use App\Modules\Users\Services\Registrar;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Session;
-
-use Veemo\Auth\Exceptions\UserNotActivatedException;
 use Veemo\Auth\Exceptions\UserBannedException;
+use Veemo\Auth\Exceptions\UserNotActivatedException;
 
+use App\Modules\Users\Events\UserHasRegistered;
+use App\Modules\Users\Events\UserHasBegunActivationProcess;
 
 
 trait AuthenticatesAndRegistersUsersTrait
@@ -28,6 +30,15 @@ trait AuthenticatesAndRegistersUsersTrait
      */
     protected $registrar;
 
+
+    /**
+     * The event dispatcher instance.
+     *
+     * @var \Illuminate\Contracts\Events\Dispatcher
+     */
+    protected $events;
+
+
     /**
      * Show the application registration form.
      *
@@ -46,6 +57,7 @@ trait AuthenticatesAndRegistersUsersTrait
      */
     public function postRegister(Request $request)
     {
+
         $validator = $this->registrar->validator($request->all());
 
         if ($validator->fails()) {
@@ -57,9 +69,37 @@ trait AuthenticatesAndRegistersUsersTrait
         $user = $this->registrar->create($request->all());
         $role = Role::where('slug', '=', config('veemo.core.users_default_user_role'))->firstOrFail();
         $user->syncRoles([$role->id]);
-        $this->auth->login($user);
 
-        return redirect()->route($this->redirectRoute());
+        $needActivation = config('veemo.auth.forceActivationRegistration');
+        $showPasswordInEmail = config('veemo.auth.showPasswordInWelcomeEmail');
+        $rawPassword = $request->input('password');
+
+
+        if ($needActivation) {
+
+            $emailView = $this->theme->locate('modules.users.email.activation');
+
+            // Fire UserHasBegunActivationProcess Event
+            $this->events->fire(new UserHasBegunActivationProcess($user, $emailView));
+
+            flash()->info('Succesfully registered. Please check your email, and click activation link to activate your account.');
+            return redirect()->route('frontend.login');
+
+        } else {
+
+            $emailView = $this->theme->locate('modules.users.email.welcome');
+
+            // Fire UserHasBegunActivationProcess Event
+            $this->events->fire(new UserHasRegistered($user, $showPasswordInEmail, $rawPassword, $emailView));
+
+            $user->activate();
+
+            $this->auth->login($user);
+
+            return redirect()->route($this->redirectRoute());
+
+        }
+
     }
 
     /**
@@ -70,17 +110,6 @@ trait AuthenticatesAndRegistersUsersTrait
     public function redirectRoute()
     {
         return property_exists($this, 'redirectRoute') ? $this->redirectRoute : 'frontend.homepage';
-    }
-
-
-    /**
-     * Get the logout redirect path.
-     *
-     * @return string
-     */
-    public function redirectLogoutRoute()
-    {
-        return property_exists($this, 'redirectLogoutRoute') ? $this->redirectLogoutRoute : 'frontend.homepage';
     }
 
     /**
@@ -114,8 +143,7 @@ trait AuthenticatesAndRegistersUsersTrait
 
                 $intended = Session::pull('url.intended');
 
-                if (is_null($intended))
-                {
+                if (is_null($intended)) {
                     return redirect()->route($this->redirectRoute());
                 }
 
@@ -128,14 +156,13 @@ trait AuthenticatesAndRegistersUsersTrait
         } catch (UserNotActivatedException $e) {
             $errors = ['error' => 'You account is not activated.'];
 
-        }  catch (UserBannedException $e) {
+        } catch (UserBannedException $e) {
             $errors = ['error' => 'You account is banned.'];
 
-        } //catch (\Exception $e) {
-            //\Log::error('Internal error. postLogin method. Error message: ' . $e->getMessage());
-           // $errors = ['error' => 'Runtime error.'];
-        // }
-
+        } catch (\Exception $e) {
+            \Log::error('Internal error. postLogin method. Error message: ' . $e->getMessage());
+            $errors = ['error' => 'Internal server error.'];
+        }
 
 
         return redirect()->route($this->loginRoute())
@@ -163,6 +190,16 @@ trait AuthenticatesAndRegistersUsersTrait
         $this->auth->logout();
 
         return redirect()->route($this->redirectLogoutRoute());
+    }
+
+    /**
+     * Get the logout redirect path.
+     *
+     * @return string
+     */
+    public function redirectLogoutRoute()
+    {
+        return property_exists($this, 'redirectLogoutRoute') ? $this->redirectLogoutRoute : 'frontend.homepage';
     }
 
 }

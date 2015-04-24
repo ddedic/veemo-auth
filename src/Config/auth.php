@@ -32,4 +32,35 @@ return array(
 
     'backendAuthPrefix' => null,
 
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Force Activation after Registration
+    |--------------------------------------------------------------------------
+    |
+    |
+    | Force user activation after registration (frontend)
+    |
+    | Default: null
+    |
+    */
+
+    'forceActivationRegistration' => true,
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Show password in welcome email
+    |--------------------------------------------------------------------------
+    |
+    |
+    | Do we show raw password in welcome email?
+    |
+    | Default: false
+    |
+    */
+    'showPasswordInWelcomeEmail' => true,
+
+
 );
