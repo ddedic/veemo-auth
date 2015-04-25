@@ -116,7 +116,7 @@ trait ResetsPasswords {
         switch ($response)
         {
             case PasswordBroker::PASSWORD_RESET:
-                flash()->info('Your password is succesfully changed. You can login now with your new password.');
+                flash()->success('Your password is succesfully changed. You can login now with your new password.');
                 return redirect()->route($this->redirectRoute());
 
             default:
