@@ -63,4 +63,34 @@ return array(
     'showPasswordInWelcomeEmail' => true,
 
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Admin use role
+    |--------------------------------------------------------------------------
+    |
+    |
+    | The default role to assigned to admin user.
+    |
+    | Default: app.user
+    |
+    */
+
+    'users_default_admin_role' => 'app.admin',
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Registration Role
+    |--------------------------------------------------------------------------
+    |
+    |
+    | The default role to assign to registered users.
+    |
+    | Default: app.user
+    |
+    */
+
+    'users_default_user_role' => 'app.user',
+
 );

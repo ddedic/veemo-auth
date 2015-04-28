@@ -67,7 +67,7 @@ trait AuthenticatesAndRegistersUsersTrait
         }
 
         $user = $this->registrar->create($request->all());
-        $role = Role::where('slug', '=', config('veemo.core.users_default_user_role'))->firstOrFail();
+        $role = Role::where('slug', '=', config('veemo.auth.users_default_user_role'))->firstOrFail();
         $user->syncRoles([$role->id]);
 
         $needActivation = config('veemo.auth.forceActivationRegistration');
