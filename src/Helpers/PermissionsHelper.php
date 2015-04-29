@@ -35,7 +35,7 @@ if ( ! function_exists('user_can')) {
      *
      * @param  string $permission
      * @param  bool|string|null $flash
-     * @param  \App\Modules\Users\Models\User|null $user
+     * @param  \App\Modules\Core\Users\Models\User|null $user
      * @param  mixed $func
      * @param  mixed $params
      * @return bool
@@ -80,7 +80,7 @@ if ( ! function_exists('user_is')) {
      *
      * @param  string $role
      * @param  bool|string|null $flash
-     * @param  \App\Modules\Users\Models\User|$user
+     * @param  \App\Modules\Core\Users\Models\User|$user
      * @param  mixed $func
      * @return bool
      */

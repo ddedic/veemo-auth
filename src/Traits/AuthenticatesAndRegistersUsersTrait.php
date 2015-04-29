@@ -1,16 +1,15 @@
 <?php namespace Veemo\Auth\Traits;
 
-use App\Modules\Users\Models\Role;
-use App\Modules\Users\Services\Registrar;
+use Session;
+use App\Modules\Core\Users\Services\Registrar;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
-use Session;
 use Veemo\Auth\Exceptions\UserBannedException;
 use Veemo\Auth\Exceptions\UserNotActivatedException;
 
-use App\Modules\Users\Events\UserHasRegistered;
-use App\Modules\Users\Events\UserHasBegunActivationProcess;
+use App\Modules\Core\Users\Events\UserHasRegistered;
+use App\Modules\Core\Users\Events\UserHasBegunActivationProcess;
 
 
 trait AuthenticatesAndRegistersUsersTrait
@@ -67,7 +66,8 @@ trait AuthenticatesAndRegistersUsersTrait
         }
 
         $user = $this->registrar->create($request->all());
-        $role = Role::where('slug', '=', config('veemo.auth.users_default_user_role'))->firstOrFail();
+        $roles = app('App\Modules\Core\Users\Repositories\RoleRepositoryInterface');
+        $role = $roles->where('slug', '=', config('veemo.auth.users_default_user_role'))->firstOrFail();
         $user->syncRoles([$role->id]);
 
         $needActivation = config('veemo.auth.forceActivationRegistration');

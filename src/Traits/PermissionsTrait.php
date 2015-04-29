@@ -2,12 +2,7 @@
 
 use Illuminate\Database\Eloquent\Collection;
 
-/**
- * License: MIT
- * Copyright (c) 2015 Shea Lewis
- * Github: https://github.com/caffeinated
- * @package caffeinated/shinobi
- */
+
 trait PermissionsTrait
 {
     /*
@@ -24,7 +19,7 @@ trait PermissionsTrait
      */
     public function roles()
     {
-        return $this->belongsToMany('\App\Modules\Users\Models\Role')->withTimestamps();
+        return $this->belongsToMany('\App\Modules\Core\Users\Models\Role')->withTimestamps();
     }
 
     /**

@@ -57,7 +57,7 @@ class AuthBackendMiddleware
         }
 
 		$permissions = $this->getPermissions($request);
-		
+
 		if (!is_null($permissions)) {
     		if ($this->auth->check() && !$request->user()->can($permissions))
     		{
