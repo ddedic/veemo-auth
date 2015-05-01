@@ -2,7 +2,12 @@
 
 use Illuminate\Database\Eloquent\Collection;
 
-
+/**
+ * License: MIT
+ * Copyright (c) 2015 Shea Lewis
+ * Github: https://github.com/caffeinated
+ * @package caffeinated/shinobi
+ */
 trait PermissionsTrait
 {
     /*
@@ -30,7 +35,7 @@ trait PermissionsTrait
     public function getRoles()
     {
         if (! is_null($this->roles)) {
-            return $this->roles->lists('slug');
+            return $this->roles()->newQuery()->lists('slug');
         }
 
         return null;
@@ -120,7 +125,7 @@ trait PermissionsTrait
 
         $slug = strtolower($slug);
 
-        foreach ($this->roles as $role) {
+        foreach ($this->roles()->newQuery()->get() as $role) {
             if ($role->slug == $slug) return true;
         }
 
@@ -135,7 +140,7 @@ trait PermissionsTrait
      */
     public function assignRole($roleId = null)
     {
-        $roles = $this->roles;
+        $roles = $this->roles()->newQuery()->get();
 
         if (! $roles->contains($roleId)) {
             return $this->roles()->attach($roleId);
@@ -190,7 +195,7 @@ trait PermissionsTrait
      */
     public function getPermissions()
     {
-        foreach ($this->roles as $role) {
+        foreach ($this->roles()->newQuery()->get() as $role) {
             $permissions[] = $role->getPermissions();
         }
 
@@ -211,7 +216,7 @@ trait PermissionsTrait
 
         $can = false;
 
-        foreach ($this->roles as $role){
+        foreach ($this->roles()->newQuery()->get() as $role){
             if ($role->can($permission)) {
                 $can = true;
             }
