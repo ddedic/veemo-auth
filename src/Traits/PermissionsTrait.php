@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\Collection;
 
+
 /**
  * License: MIT
  * Copyright (c) 2015 Shea Lewis
@@ -125,7 +126,7 @@ trait PermissionsTrait
 
         $slug = strtolower($slug);
 
-        foreach ($this->roles()->newQuery()->get() as $role) {
+        foreach ($this->roles as $role) {
             if ($role->slug == $slug) return true;
         }
 
@@ -140,7 +141,7 @@ trait PermissionsTrait
      */
     public function assignRole($roleId = null)
     {
-        $roles = $this->roles()->newQuery()->get();
+        $roles = $this->roles;
 
         if (! $roles->contains($roleId)) {
             return $this->roles()->attach($roleId);
@@ -195,7 +196,7 @@ trait PermissionsTrait
      */
     public function getPermissions()
     {
-        foreach ($this->roles()->newQuery()->get() as $role) {
+        foreach ($this->roles as $role) {
             $permissions[] = $role->getPermissions();
         }
 
@@ -212,11 +213,13 @@ trait PermissionsTrait
      */
     public function can($permission)
     {
+
         if ( $this->is_superuser ) return true;
 
         $can = false;
 
-        foreach ($this->roles()->newQuery()->get() as $role){
+
+        foreach ($this->roles as $role){
             if ($role->can($permission)) {
                 $can = true;
             }
